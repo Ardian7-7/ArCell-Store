@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ArCell Store</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+<style>
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:'Poppins',sans-serif;
+  background:
+    linear-gradient(rgba(0,40,30,.65),rgba(0,0,0,.75)),
+    url('https://images.unsplash.com/photo-1501785888041-af3ef285b470');
+  background-size:cover;
+  background-position:center;
+  background-attachment:fixed;
+  color:#fff;
+}
+
+header{
+  text-align:center;
+  padding:35px 15px;
+  background:rgba(0,0,0,.45);
+  backdrop-filter:blur(4px);
+}
+h1{
+  margin:0;
+  color:#7CFFB2;
+  font-weight:600;
+  text-shadow:0 0 10px rgba(124,255,178,.6);
+}
+
+.box{
+  max-width:420px;
+  margin:25px auto;
+  padding:25px;
+  background:rgba(255,255,255,.15);
+  backdrop-filter:blur(12px);
+  border-radius:20px;
+  box-shadow:0 15px 35px rgba(0,0,0,.3);
+}
+
+input,button{
+  width:100%;
+  padding:12px;
+  margin:8px 0;
+  border-radius:12px;
+  border:none;
+  outline:none;
+  font-family:'Poppins',sans-serif;
+}
+
+input{
+  background:rgba(255,255,255,.85);
+}
+
+button{
+  background:linear-gradient(135deg,#4CAF50,#2E8B57);
+  color:#fff;
+  font-weight:600;
+  cursor:pointer;
+  transition:.3s;
+}
+button:hover{transform:scale(1.04)}
+
+.hidden{display:none}
+
+.container{
+  max-width:900px;
+  margin:auto;
+  padding:20px;
+}
+
+.search input{
+  max-width:500px;
+  margin:0 auto 25px;
+  display:block;
+}
+
+details{
+  background:rgba(255,255,255,.18);
+  margin-bottom:15px;
+  padding:18px;
+  border-radius:18px;
+  box-shadow:0 8px 25px rgba(0,0,0,.25);
+}
+
+summary{
+  cursor:pointer;
+  font-size:17px;
+  font-weight:600;
+  color:#E8FFD8;
+}
+
+.price{
+  color:#7CFFB2;
+  font-weight:600;
+}
+
+footer{
+  text-align:center;
+  padding:20px;
+  font-size:13px;
+  opacity:.8;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1>🌿 ArCell Store 🌿</h1>
+  <p>Top Up Diamond Mobile Legends • Aman & Terpercaya</p>
+</header>
+
+<!-- LOGIN -->
+<div class="box" id="loginBox">
+  <h3>Login</h3>
+  <input id="loginUser" placeholder="Username">
+  <input id="loginPass" type="password" placeholder="Password">
+  <button onclick="login()">Login</button>
+  <p>Belum punya akun? <a href="#" onclick="showRegister()">Register</a></p>
+</div>
+
+<!-- REGISTER -->
+<div class="box hidden" id="registerBox">
+  <h3>Register</h3>
+  <input id="regUser" placeholder="Username">
+  <input id="regPass" type="password" placeholder="Password">
+  <button onclick="register()">Register</button>
+  <p><a href="#" onclick="showLogin()">Kembali ke login</a></p>
+</div>
+
+<!-- STORE -->
+<div id="store" class="hidden">
+
+<div class="search">
+  <input id="search" placeholder="Cari diamond..." onkeyup="cariProduk()">
+</div>
+
+<div class="container">
+
+<script>
+const produkList = [
+["5 Diamond",2000],
+["30 Diamond",10000],
+["50 Diamond",15000],
+["70 Diamond",22000],
+["110 Diamond",30000],
+["148 Diamond",40000],
+["176 Diamond",50000],
+["210 Diamond",60000],
+["240 Diamond",72000],
+["300 Diamond",80000],
+["345 Diamond",95000],
+["568 Diamond",147000],
+["Weekly Diamond Pass",31000],
+["Weekly Diamond Pass 2x",60000],
+["Weekly Diamond Pass 3x",87000]
+];
+
+document.write(produkList.map(p=>`
+<details>
+  <summary>${p[0]} — <span class="price">Rp ${p[1].toLocaleString()}</span></summary>
+  <form onsubmit="checkout(event,'${p[0]}',${p[1]})">
+    <input required placeholder="ID Game(Server)">
+    <button>Checkout</button>
+  </form>
+</details>
+`).join(""));
+</script>
+
+</div>
+
+<button onclick="logout()" style="max-width:220px;margin:30px auto;display:block">Logout</button>
+</div>
+
+<footer>© 2026 ArCell Store • Natural & Trusted</footer>
+
+<script>
+let users = JSON.parse(localStorage.getItem("users")) || {};
+let currentUser = localStorage.getItem("login");
+
+if(currentUser){ showStore(); }
+
+function showRegister(){
+  loginBox.classList.add("hidden");
+  registerBox.classList.remove("hidden");
+}
+function showLogin(){
+  registerBox.classList.add("hidden");
+  loginBox.classList.remove("hidden");
+}
+
+function register(){
+  let u = regUser.value;
+  let p = regPass.value;
+  if(users[u]) return alert("Username sudah ada");
+  users[u] = p;
+  localStorage.setItem("users", JSON.stringify(users));
+  alert("Register berhasil!");
+  showLogin();
+}
+
+function login(){
+  let u = loginUser.value;
+  let p = loginPass.value;
+  if(users[u] === p){
+    localStorage.setItem("login", u);
+    currentUser = u;
+    showStore();
+  } else alert("Login gagal");
+}
+
+function logout(){
+  localStorage.removeItem("login");
+  location.reload();
+}
+
+function showStore(){
+  loginBox.classList.add("hidden");
+  registerBox.classList.add("hidden");
+  store.classList.remove("hidden");
+}
+
+function checkout(e,produk,harga){
+  e.preventDefault();
+  let gameId = e.target.querySelector("input").value;
+  let wa = "6282135343774";
+  let text = encodeURIComponent(
+`ORDER ARCELL STORE
+User: ${currentUser}
+Produk: ${produk}
+Harga: Rp ${harga.toLocaleString()}
+ID Game: ${gameId}`
+  );
+  window.open(`https://wa.me/${wa}?text=${text}`,"_blank");
+}
+
+function cariProduk(){
+  let val = search.value.toLowerCase();
+  document.querySelectorAll("details").forEach(d=>{
+    d.style.display = d.innerText.toLowerCase().includes(val) ? "block":"none";
+  });
+}
+</script>
+
+</body>
+</html>
